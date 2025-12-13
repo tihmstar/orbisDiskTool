@@ -1,0 +1,346 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8741CF4A2EEC8987009C7FA1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8741CF462EEC8987009C7FA1 /* main.cpp */; };
+		8741CF4B2EEC8987009C7FA1 /* OrbisInternalDisk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8741CF482EEC8987009C7FA1 /* OrbisInternalDisk.cpp */; };
+		8741CF4E2EEC8B02009C7FA1 /* libgeneral.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8741CF4D2EEC8B02009C7FA1 /* libgeneral.0.dylib */; };
+		8741CF4F2EEC8B02009C7FA1 /* libgeneral.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8741CF4D2EEC8B02009C7FA1 /* libgeneral.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8741CF522EEC905B009C7FA1 /* libcrypto.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8741CF512EEC905B009C7FA1 /* libcrypto.3.dylib */; };
+		8741CF532EEC905B009C7FA1 /* libcrypto.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8741CF512EEC905B009C7FA1 /* libcrypto.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8741CF5A2EED9163009C7FA1 /* OrbisDiskFuse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8741CF592EED9163009C7FA1 /* OrbisDiskFuse.cpp */; };
+		8741CF5C2EED980E009C7FA1 /* libfuse.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8741CF5B2EED980E009C7FA1 /* libfuse.2.dylib */; };
+		8741CF5D2EED980E009C7FA1 /* libfuse.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8741CF5B2EED980E009C7FA1 /* libfuse.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8741CF352EEAD88B009C7FA1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		8741CF502EEC8B02009C7FA1 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8741CF5D2EED980E009C7FA1 /* libfuse.2.dylib in Embed Libraries */,
+				8741CF532EEC905B009C7FA1 /* libcrypto.3.dylib in Embed Libraries */,
+				8741CF4F2EEC8B02009C7FA1 /* libgeneral.0.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8741CF372EEAD88B009C7FA1 /* orbisDiskTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = orbisDiskTool; sourceTree = BUILT_PRODUCTS_DIR; };
+		8741CF462EEC8987009C7FA1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		8741CF472EEC8987009C7FA1 /* OrbisInternalDisk.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OrbisInternalDisk.hpp; sourceTree = "<group>"; };
+		8741CF482EEC8987009C7FA1 /* OrbisInternalDisk.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OrbisInternalDisk.cpp; sourceTree = "<group>"; };
+		8741CF4D2EEC8B02009C7FA1 /* libgeneral.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgeneral.0.dylib; path = ../../../../usr/local/lib/libgeneral.0.dylib; sourceTree = "<group>"; };
+		8741CF512EEC905B009C7FA1 /* libcrypto.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.3.dylib; path = ../../../../usr/local/lib/libcrypto.3.dylib; sourceTree = "<group>"; };
+		8741CF582EED9163009C7FA1 /* OrbisDiskFuse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OrbisDiskFuse.hpp; sourceTree = "<group>"; };
+		8741CF592EED9163009C7FA1 /* OrbisDiskFuse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OrbisDiskFuse.cpp; sourceTree = "<group>"; };
+		8741CF5B2EED980E009C7FA1 /* libfuse.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfuse.2.dylib; path = ../../../../usr/local/lib/libfuse.2.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8741CF342EEAD88B009C7FA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8741CF5C2EED980E009C7FA1 /* libfuse.2.dylib in Frameworks */,
+				8741CF522EEC905B009C7FA1 /* libcrypto.3.dylib in Frameworks */,
+				8741CF4E2EEC8B02009C7FA1 /* libgeneral.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8741CF2E2EEAD88B009C7FA1 = {
+			isa = PBXGroup;
+			children = (
+				8741CF492EEC8987009C7FA1 /* orbisDiskTool */,
+				8741CF4C2EEC8B02009C7FA1 /* Frameworks */,
+				8741CF382EEAD88B009C7FA1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8741CF382EEAD88B009C7FA1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8741CF372EEAD88B009C7FA1 /* orbisDiskTool */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8741CF492EEC8987009C7FA1 /* orbisDiskTool */ = {
+			isa = PBXGroup;
+			children = (
+				8741CF472EEC8987009C7FA1 /* OrbisInternalDisk.hpp */,
+				8741CF482EEC8987009C7FA1 /* OrbisInternalDisk.cpp */,
+				8741CF582EED9163009C7FA1 /* OrbisDiskFuse.hpp */,
+				8741CF592EED9163009C7FA1 /* OrbisDiskFuse.cpp */,
+				8741CF462EEC8987009C7FA1 /* main.cpp */,
+			);
+			path = orbisDiskTool;
+			sourceTree = "<group>";
+		};
+		8741CF4C2EEC8B02009C7FA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8741CF5B2EED980E009C7FA1 /* libfuse.2.dylib */,
+				8741CF512EEC905B009C7FA1 /* libcrypto.3.dylib */,
+				8741CF4D2EEC8B02009C7FA1 /* libgeneral.0.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8741CF362EEAD88B009C7FA1 /* orbisDiskTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8741CF3E2EEAD88C009C7FA1 /* Build configuration list for PBXNativeTarget "orbisDiskTool" */;
+			buildPhases = (
+				8741CF332EEAD88B009C7FA1 /* Sources */,
+				8741CF342EEAD88B009C7FA1 /* Frameworks */,
+				8741CF352EEAD88B009C7FA1 /* CopyFiles */,
+				8741CF502EEC8B02009C7FA1 /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = orbisDiskTool;
+			packageProductDependencies = (
+			);
+			productName = orbisDiskTool;
+			productReference = 8741CF372EEAD88B009C7FA1 /* orbisDiskTool */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8741CF2F2EEAD88B009C7FA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					8741CF362EEAD88B009C7FA1 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 8741CF322EEAD88B009C7FA1 /* Build configuration list for PBXProject "orbisDiskTool" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8741CF2E2EEAD88B009C7FA1;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8741CF382EEAD88B009C7FA1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8741CF362EEAD88B009C7FA1 /* orbisDiskTool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8741CF332EEAD88B009C7FA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8741CF5A2EED9163009C7FA1 /* OrbisDiskFuse.cpp in Sources */,
+				8741CF4A2EEC8987009C7FA1 /* main.cpp in Sources */,
+				8741CF4B2EEC8987009C7FA1 /* OrbisInternalDisk.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8741CF3C2EEAD88C009C7FA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8741CF3D2EEAD88C009C7FA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8741CF3F2EEAD88C009C7FA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					HAVE_FUSE,
+					"_FILE_OFFSET_BITS=64",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8741CF402EEAD88C009C7FA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8741CF322EEAD88B009C7FA1 /* Build configuration list for PBXProject "orbisDiskTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8741CF3C2EEAD88C009C7FA1 /* Debug */,
+				8741CF3D2EEAD88C009C7FA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8741CF3E2EEAD88C009C7FA1 /* Build configuration list for PBXNativeTarget "orbisDiskTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8741CF3F2EEAD88C009C7FA1 /* Debug */,
+				8741CF402EEAD88C009C7FA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8741CF2F2EEAD88B009C7FA1 /* Project object */;
+}
