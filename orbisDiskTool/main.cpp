@@ -161,14 +161,15 @@ int main_r(int argc, const char * argv[]) {
         }
     }
 
-    if (metaDataKey.size()) disk->setMetaDataKey(metaDataKey.data(), metaDataKey.size());
-    if (metaTweakKey.size()) disk->setMetaTweakKey(metaTweakKey.data(), metaTweakKey.size());
+    retassure(metaDataKey.size(), "Metadata key not set!");
+    disk->setMetaDataKey(metaDataKey.data(), metaDataKey.size());
+    
+    retassure(metaTweakKey.size(), "Metadata tweak not set!");
+    disk->setMetaTweakKey(metaTweakKey.data(), metaTweakKey.size());
 
     //must happen after setting metadata keys
-    if (metaDataKey.size() && metaTweakKey.size()) disk->setDataKeygenKey(dataKeygenKey.data(), dataKeygenKey.size());
-
-    tihmstar::Mem blk(disk->getBlockSize());
-    disk->readDataBlock(blk.data(), blk.size(), 1);
+    retassure(dataKeygenKey.size(), "Data genkey not set!");
+    disk->setDataKeygenKey(dataKeygenKey.data(), dataKeygenKey.size());
     
     if (decryptOutPath) {
         disk->decryptImage(decryptOutPath, threads);
