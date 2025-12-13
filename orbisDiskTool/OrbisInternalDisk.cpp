@@ -15,6 +15,7 @@
 #include <openssl/hmac.h>
 
 #include <thread>
+#include <vector>
 
 #include <unistd.h>
 #include <fcntl.h>
