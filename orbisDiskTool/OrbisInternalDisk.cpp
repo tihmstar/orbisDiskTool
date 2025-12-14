@@ -21,6 +21,8 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/disk.h>
 
 #define INNER_SECTOR_SIZE 0x200
 #define OUTER_SECTOR_SIZE 0x10000
@@ -57,9 +59,28 @@ OrbisInternalDisk::OrbisInternalDisk(const char *path, bool writeable)
     {
         struct stat st = {};
         retassure(!fstat(_fd, &st), "Failed to stat file");
-        _memsize = st.st_size;
+        
+        if (S_ISBLK(st.st_mode)){
+            uint64_t count = 0;
+            uint64_t bsize = 0;
+#ifdef DKIOCGETBLOCKCOUNT
+            retassure(!ioctl(_fd, DKIOCGETBLOCKCOUNT, &count), "Failed to get blk count");
+#endif
+#ifdef DKIOCGETBLOCKSIZE
+            retassure(!ioctl(_fd, DKIOCGETBLOCKSIZE, &bsize), "Failed to get blk size");
+#endif
+            debug("Got blkcnt=0x%llx",count);
+            debug("Got blksize=0x%llx",bsize);
+            _memsize = count * bsize;
+        }else{
+            _memsize = st.st_size;
+        }
     }
-    retassure((_mem = (uint8_t*)mmap(NULL, _memsize, PROT_READ | (writeable ? PROT_WRITE : 0), MAP_FILE | (writeable ? MAP_SHARED : MAP_PRIVATE), _fd, 0)) != MAP_FAILED, "Failed to mmap '%s'",path);
+    retassure(_memsize, "Failed to detect image size!");
+    if ((_mem = (uint8_t*)mmap(NULL, _memsize, PROT_READ | (writeable ? PROT_WRITE : 0), MAP_FILE | (writeable ? MAP_SHARED : MAP_PRIVATE), _fd, 0)) == MAP_FAILED){
+        _mem = NULL;
+        warning("Failed to mmap '%s', using fallback strategy",path);
+    }
 }
 
 OrbisInternalDisk::~OrbisInternalDisk(){
@@ -115,7 +136,6 @@ void OrbisInternalDisk::setMetaTweakKey(const void *key, size_t keySize){
 void OrbisInternalDisk::setDataKeygenKey(const void *key, size_t keySize){
     retassure(_memsize >= METADATA_SECTOR_INDEX * OUTER_SECTOR_SIZE + INNER_SECTOR_SIZE, "Image too small");
 
-    uint8_t *ptrmeta = &_mem[METADATA_SECTOR_INDEX * OUTER_SECTOR_SIZE];
     OrbisMeta meta = {};
     uint8_t realDgst[SHA256_DIGEST_LENGTH] = {};
     
@@ -123,7 +143,7 @@ void OrbisInternalDisk::setDataKeygenKey(const void *key, size_t keySize){
     retassure(_diskKeys[kDiskKeyIDMetaKeyDec].rounds, "Metadata key not set!");
     retassure(keySize, "Data key not set!");
 
-    retassure(aes_run_xts_block(ptrmeta, &meta, sizeof(meta), &_diskKeys[kDiskKeyIDMetaTweakEnc], &_diskKeys[kDiskKeyIDMetaKeyDec], METADATA_SECTOR_INDEX, false) == sizeof(meta), "Failed to decrypt metadata");
+    retassure(readDataBlock(&meta, sizeof(meta), METADATA_SECTOR_INDEX) == sizeof(meta), "Failed to decrypt metadata");
 #define dumpHex(v) for (int i=0; i<sizeof(v); i++) printf("%02x",v[i]); printf("\n");
     printf("Magic:      '%.*s'\n",(int)sizeof(meta.magic),meta.magic);
     printf("Versin:     0x%x\n",meta.version);
@@ -164,10 +184,19 @@ uint64_t OrbisInternalDisk::getBlockSize(){
 size_t OrbisInternalDisk::readDataBlock(void *outbuf, size_t outbufSize, uint64_t index){
     retassure(OUTER_SECTOR_SIZE * index < _memsize, "Trying to access out of bounds index");
 
-    uint8_t *ptr = &_mem[OUTER_SECTOR_SIZE * index];
-
     if (outbufSize > OUTER_SECTOR_SIZE) outbufSize = OUTER_SECTOR_SIZE;
-    if (outbufSize > _memsize - (ptr - _mem)) outbufSize = _memsize - (ptr - _mem);
+
+    uint8_t *ptr = NULL;
+    if (_mem){
+        ptr = &_mem[OUTER_SECTOR_SIZE * index];
+        if (outbufSize > _memsize - (ptr - _mem)) outbufSize = _memsize - (ptr - _mem);
+    }else{
+        ptr = (uint8_t*)outbuf;
+        ssize_t didread = pread(_fd, ptr, outbufSize, OUTER_SECTOR_SIZE * index);
+        retassure(didread > 0, "Failed to pread data");
+        outbufSize = didread;
+    }
+    
     if (index == 1) {
         return aes_run_xts_block(ptr, outbuf, outbufSize, &_diskKeys[kDiskKeyIDMetaTweakEnc], &_diskKeys[kDiskKeyIDMetaKeyDec], index, false);
     }else{
