@@ -22,7 +22,10 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <sys/disk.h>
+
+#ifdef HAVE_SYS_DISK_H
+#   include <sys/disk.h>
+#endif //HAVE_SYS_DISK_H
 
 #define INNER_SECTOR_SIZE 0x200
 #define OUTER_SECTOR_SIZE 0x10000

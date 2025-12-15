@@ -62,6 +62,7 @@ else
 fi
 
 # Checks for header files.
+AC_CHECK_HEADERS([sys/disk.h])
 
 # Check for libraries
 
