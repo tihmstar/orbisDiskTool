@@ -27,6 +27,10 @@
 #   include <sys/disk.h>
 #endif //HAVE_SYS_DISK_H
 
+#ifdef HAVE_LINUX_FS_H
+#   include <linux/fs.h>
+#endif //HAVE_LINUX_FS_H
+
 #define INNER_SECTOR_SIZE 0x200
 #define OUTER_SECTOR_SIZE 0x10000
 
@@ -66,15 +70,32 @@ OrbisInternalDisk::OrbisInternalDisk(const char *path, bool writeable)
         if (S_ISBLK(st.st_mode)){
             uint64_t count = 0;
             uint64_t bsize = 0;
+            {
+                /*
+                    macOS
+                 */
 #ifdef DKIOCGETBLOCKCOUNT
-            retassure(!ioctl(_fd, DKIOCGETBLOCKCOUNT, &count), "Failed to get blk count");
-#endif
+                retassure(!ioctl(_fd, DKIOCGETBLOCKCOUNT, &count), "Failed to get blk count");
+#endif //DKIOCGETBLOCKCOUNT
 #ifdef DKIOCGETBLOCKSIZE
-            retassure(!ioctl(_fd, DKIOCGETBLOCKSIZE, &bsize), "Failed to get blk size");
-#endif
-            debug("Got blkcnt=0x%llx",count);
-            debug("Got blksize=0x%llx",bsize);
-            _memsize = count * bsize;
+                retassure(!ioctl(_fd, DKIOCGETBLOCKSIZE, &bsize), "Failed to get blk size");
+#endif //DKIOCGETBLOCKSIZE
+                debug("Got blkcnt=0x%llx",count);
+                debug("Got blksize=0x%llx",bsize);
+                _memsize = count * bsize;
+            }
+            
+            {
+                /*
+                    Linux
+                 */
+                uint64_t devsize = 0;
+#ifdef BLKGETSIZE64
+                retassure(!ioctl(_fd, BLKGETSIZE64, &devsize), "Failed to get devsize size");
+#endif //BLKGETSIZE64
+                if (!_memsize) _memsize = devsize;
+            }
+            
         }else{
             _memsize = st.st_size;
         }

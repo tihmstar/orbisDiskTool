@@ -306,6 +306,7 @@
 					"$(inherited)",
 					HAVE_FUSE,
 					"_FILE_OFFSET_BITS=64",
+					HAVE_SYS_DISK_H,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
