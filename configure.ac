@@ -26,7 +26,7 @@ CFLAGS+=" -std=c11"
 # Checks for libraries.
 FUSE_REQUIRES_STR="fuse >= 2.8"
 LIBGENERAL_REQUIRES_STR="libgeneral >= 84"
-OPENSSL_REQUIRES_STR="openssl >= 3.3.0"
+OPENSSL_REQUIRES_STR="openssl >= 3.0.0"
 
 PKG_CHECK_MODULES(libfuse, $FUSE_REQUIRES_STR, have_fuse=yes, have_fuse=no)
 PKG_CHECK_MODULES(libgeneral, $LIBGENERAL_REQUIRES_STR)
