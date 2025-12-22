@@ -238,9 +238,7 @@ uint64_t OrbisInternalDisk::getBlockSize(){
 
 size_t OrbisInternalDisk::readDataBlock(void *outbuf, size_t outbufSize, uint64_t index){
     retassure(_sectorSize * index < _memsize, "Trying to access out of bounds index");
-    outbufSize &= ~(_sectorSize-1); //when we're dealing with a real blockdevice, we should do full block reads
-
-    if (index < _metadataSectorIdx+1) outbufSize = _sectorSize; //aes_run_xts_block doesn't handle key switches
+    if (outbufSize > _sectorSize && index < _metadataSectorIdx+1) outbufSize = _sectorSize; //aes_run_xts_block doesn't handle key switches
     
     uint8_t *ptr = NULL;
     if (_mem){
