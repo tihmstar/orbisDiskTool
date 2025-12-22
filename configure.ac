@@ -61,6 +61,12 @@ else
   AC_SUBST([HEADER_HAVE_FUSE], [0])
 fi
 
+if test "$debug_build" = true; then
+  echo "*** Note: debug build requested ***"
+  CFLAGS+=" -g -O0 -DDEBUG=1"
+  CXXFLAGS+=" -g -O0 -DDEBUG=1"
+fi
+
 # Checks for header files.
 AC_CHECK_HEADERS([sys/disk.h linux/fs.h])
 

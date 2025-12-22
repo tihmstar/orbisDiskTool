@@ -52,6 +52,7 @@ public:
     size_t readDataBlock(void *outbuf, size_t outbufSize, uint64_t index);
     size_t read(void *outbuf, size_t size, uint64_t offset);
     
+    size_t writeDataBlock(const void *inbuf, size_t inbufSize, uint64_t index);
     size_t write(const void *inbuf, size_t size, uint64_t offset);
 
     void decryptImage(const char *outPath, uint16_t threads = 0);

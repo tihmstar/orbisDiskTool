@@ -61,7 +61,11 @@ OrbisInternalDisk::OrbisInternalDisk(const char *path, bool writeable)
 , _mem(NULL), _memsize(0)
 , _sectorSize(0), _metadataSectorIdx(0), _ExtHDDKey{}
 , _diskKeys{}
-{    
+{
+#ifndef DEBUG
+    retassure(!_writeable, "write support is currently only available in DEBUG builds");
+#endif
+    
     retassure((_fd = open(path, writeable ? O_RDWR : O_RDONLY)) != -1, "Failed to open=%s",path);
     {
         struct stat st = {};
@@ -101,11 +105,15 @@ OrbisInternalDisk::OrbisInternalDisk(const char *path, bool writeable)
         }
     }
     retassure(_memsize, "Failed to detect image size!");
-    if ((_mem = (uint8_t*)mmap(NULL, _memsize, PROT_READ | (writeable ? PROT_WRITE : 0), MAP_FILE | (writeable ? MAP_SHARED : MAP_PRIVATE), _fd, 0)) == MAP_FAILED){
-        _mem = NULL;
-        warning("Failed to mmap '%s', using fallback strategy",path);
+    if (!_writeable){
+        /*
+            We do not use mmap in writeable mode
+         */
+        if ((_mem = (uint8_t*)mmap(NULL, _memsize, PROT_READ | (writeable ? PROT_WRITE : 0), MAP_FILE | (writeable ? MAP_SHARED : MAP_PRIVATE), _fd, 0)) == MAP_FAILED){
+            _mem = NULL;
+            warning("Failed to mmap '%s', using fallback strategy",path);
+        }
     }
-    _sectorSize = 0;
 }
 
 OrbisInternalDisk::~OrbisInternalDisk(){
@@ -123,12 +131,16 @@ size_t OrbisInternalDisk::aes_run_xts_block(const void *inbuf_, void *outbuf_, s
     uint8_t tweakBuf[0x10] = {};
     size_t didProcess = 0;
     
-    if (bufSize > _sectorSize) bufSize = _sectorSize;
+    bufSize &= ~0xF;
     
-    memcpy(tweakBuf, &index, sizeof(index));
-    AES_encrypt(tweakBuf, tweakBuf, tweak);
-
     for (; didProcess+0x10 <= bufSize; didProcess+=0x10) {
+        if ((didProcess & (_sectorSize -1)) == 0){
+            memset(tweakBuf, 0, sizeof(tweakBuf));
+            memcpy(tweakBuf, &index, sizeof(index));
+            AES_encrypt(tweakBuf, tweakBuf, tweak);
+            index++;
+        }
+        
         uint64_t *in = (uint64_t*)&inbuf[didProcess];
         uint64_t *out = (uint64_t*)&outbuf[didProcess];
         uint64_t *t = (uint64_t*)tweakBuf;
@@ -226,9 +238,10 @@ uint64_t OrbisInternalDisk::getBlockSize(){
 
 size_t OrbisInternalDisk::readDataBlock(void *outbuf, size_t outbufSize, uint64_t index){
     retassure(_sectorSize * index < _memsize, "Trying to access out of bounds index");
+    outbufSize &= ~(_sectorSize-1); //when we're dealing with a real blockdevice, we should do full block reads
 
-    if (outbufSize > _sectorSize) outbufSize = _sectorSize;
-
+    if (index < _metadataSectorIdx+1) outbufSize = _sectorSize; //aes_run_xts_block doesn't handle key switches
+    
     uint8_t *ptr = NULL;
     if (_mem){
         ptr = &_mem[_sectorSize * index];
@@ -254,14 +267,14 @@ size_t OrbisInternalDisk::read(void *outbuf_, size_t size, uint64_t offset){
     tihmstar::Mem blk;
     
     while (size) {
-        uint64_t curOffset = offset % _sectorSize;
+        uint64_t curOffset = offset & (_sectorSize-1);
         uint64_t curIDX = offset / _sectorSize;
         size_t curread = 0;
         
         if (curOffset) {
             blk.resize(_sectorSize);
             curread = readDataBlock(blk.data(), blk.size(), curIDX);
-            if (curread < curOffset) return 0;
+            if (curread < curOffset) return ret;
             size_t curCopy = curread-curOffset;
             if (curCopy > size) curCopy = size;
             memcpy(outbuf, blk.data()+curOffset, curCopy);
@@ -279,8 +292,65 @@ size_t OrbisInternalDisk::read(void *outbuf_, size_t size, uint64_t offset){
     return ret;
 }
 
-size_t OrbisInternalDisk::write(const void *inbuf, size_t size, uint64_t offset){
-    reterror("Writing not implemented");
+size_t OrbisInternalDisk::writeDataBlock(const void *inbuf, size_t inbufSize, uint64_t index){
+    const uint8_t *ptr = (const uint8_t *)inbuf;
+
+    if (inbufSize < _sectorSize) return 0;
+    inbufSize &= ~(_sectorSize-1);
+    
+    tihmstar::Mem blk(_sectorSize);
+    size_t totalDiDwrite = 0;
+    
+    while (inbufSize >= _sectorSize) {
+        size_t didEnc = 0;
+        if (index == _metadataSectorIdx) {
+            didEnc = aes_run_xts_block(ptr, blk.data(), blk.size(), &_diskKeys[kDiskKeyIDMetaTweakEnc], &_diskKeys[kDiskKeyIDMetaKeyEnc], index, true);
+        }else{
+            didEnc = aes_run_xts_block(ptr, blk.data(), blk.size(), &_diskKeys[kDiskKeyIDDataTweakEnc], &_diskKeys[kDiskKeyIDDataKeyEnc], index, true);
+        }
+        if (didEnc != blk.size()) break; //should never happen i guess?
+
+        ssize_t didWrite = pwrite(_fd, blk.data(), blk.size(), _sectorSize * index);
+        index++;
+        totalDiDwrite += didWrite;
+        inbufSize -= didWrite;
+        ptr += didWrite;
+    }
+    
+    return totalDiDwrite;
+}
+
+size_t OrbisInternalDisk::write(const void *inbuf_, size_t size, uint64_t offset){
+    uint8_t *inbuf = (uint8_t*)inbuf_;
+    size_t ret = 0;
+    
+    tihmstar::Mem blk;
+    
+    while (size) {
+        uint64_t curOffset = offset & (_sectorSize-1);
+        uint64_t curIDX = offset / _sectorSize;
+        size_t curWrite = 0;
+        
+        if (curOffset || size < _sectorSize) {
+            blk.resize(_sectorSize);
+            size_t curread = readDataBlock(blk.data(), blk.size(), curIDX);
+            if (curread < curOffset) return ret;
+            size_t curCopy = _sectorSize-curOffset;
+            if (curCopy > size) curCopy = size;
+            memcpy(blk.data()+curOffset, inbuf, curCopy);
+            if (writeDataBlock(blk.data(), blk.size(), curIDX) != blk.size()) break;
+            curWrite = curCopy;
+            blk.resize(0);
+        }else{
+            curWrite = writeDataBlock(inbuf, size, curIDX);
+            if (!curWrite) break;
+        }
+        ret += curWrite;
+        size -= curWrite;
+        inbuf += curWrite;
+        offset += curWrite;
+    }
+    return ret;
 }
 
 void OrbisInternalDisk::decryptImage(const char *outPath, uint16_t threads){
