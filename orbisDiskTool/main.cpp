@@ -20,6 +20,7 @@ using namespace orbisDiskTool;
 static struct option longopts[] = {
     { "help",               no_argument,        NULL, 'h' },
     { "decrypt",            required_argument,  NULL, 'd' },
+    { "exteranl",           no_argument,        NULL, 'h' },
     { "input",              required_argument,  NULL, 'i' },
     { "threads",            required_argument,  NULL, 'j' },
     { "data-keygen-key",    required_argument,  NULL, 'k' },
@@ -37,11 +38,12 @@ void cmd_help(){
            "Encrypt/Decrypt/Mount orbis disk images\n\n"
            "  -h, --help\t\t\t\tprints usage information\n"
            "  -d, --decrypt <outpath>\t\toutput path for image decryption\n"
+           "  -E, --external\t\t\t\tswitch to using extHDD ENV vars\n"
            "  -i, --input <path>\t\t\tinput file (or blockdevice)\n"
            "  -j, --thread <cnt>\t\t\tnumber of threads (for decryption)\n"
-           "  -k, --data-keygen-key <key>\t\tdata-keygen-key in hexbytes\n"
-           "  -m, --metadata-data-key <key>\t\tmetadata-data-key in hexbytes\n"
-           "  -t, --metadata-tweak-key <key>\tmetadata-tweak-key in hexbytes\n"
+           "  -k, --data-keygen-key <key>\t\tdata-keygen-key in hexbytes (env: DATA_KEYGEN_KEY)\n"
+           "  -m, --metadata-data-key <key>\t\tmetadata-data-key in hexbytes (env: METADATA_DATA_KEY  / EXT_METADATA_DATA_KEY)\n"
+           "  -t, --metadata-tweak-key <key>\tmetadata-tweak-key in hexbytes (env: METADATA_TWEAK_KEY / EXT_METADATA_TWEAK_KEY)\n"
            "  -w, --writeable\t\t\topen image in write mode\n"
            "      --mount <path>\t\t\tpath to mount\n"
            "\n"
@@ -80,8 +82,9 @@ int main_r(int argc, const char * argv[]) {
 
     uint16_t threads = 0;
     bool writeable = false;
+    bool extHDDEnvVars = false;
     
-    while ((opt = getopt_long(argc, (char* const *)argv, "hd:i:j:k:m:t:w", longopts, &optindex)) >= 0) {
+    while ((opt = getopt_long(argc, (char* const *)argv, "hd:Ei:j:k:m:t:w", longopts, &optindex)) >= 0) {
         switch (opt) {
             case 0: //long opts
             {
@@ -99,6 +102,10 @@ int main_r(int argc, const char * argv[]) {
                 cmd_help();
                 return 0;
 
+            case 'E':
+                extHDDEnvVars = true;
+                break;
+                
             case 'd':
                 decryptOutPath = optarg;
                 break;
@@ -144,20 +151,20 @@ int main_r(int argc, const char * argv[]) {
     std::shared_ptr<OrbisInternalDisk> disk = std::make_shared<OrbisInternalDisk>(infile,writeable);
 
     if (!metaDataKey.size()){
-        if (const char *val = getenv("METADATA_DATA_KEY")){
+        if (const char *val = getenv(extHDDEnvVars ? "EXT_METADATA_DATA_KEY" : "METADATA_DATA_KEY")){
             metaDataKey = parseHex(val);
         }
     }
 
     if (!metaTweakKey.size()){
-        if (const char *val = getenv("METADATA_TWEAK_KEY")){
+        if (const char *val = getenv(extHDDEnvVars ? "EXT_METADATA_TWEAK_KEY" : "METADATA_TWEAK_KEY")){
             metaTweakKey = parseHex(val);
         }
     }
     
     if (!dataKeygenKey.size()){
         if (const char *val = getenv("DATA_KEYGEN_KEY")){
-            dataKeygenKey = parseHex(val);
+            if (!extHDDEnvVars) dataKeygenKey = parseHex(val);
         }
     }
 
@@ -168,9 +175,8 @@ int main_r(int argc, const char * argv[]) {
     disk->setMetaTweakKey(metaTweakKey.data(), metaTweakKey.size());
 
     //must happen after setting metadata keys
-    retassure(dataKeygenKey.size(), "Data genkey not set!");
-    disk->setDataKeygenKey(dataKeygenKey.data(), dataKeygenKey.size());
-    
+    disk->initCrypto(dataKeygenKey.data(), dataKeygenKey.size());
+
     if (decryptOutPath) {
         disk->decryptImage(decryptOutPath, threads);
     }

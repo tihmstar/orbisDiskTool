@@ -32,7 +32,9 @@ private:
     int _fd;
     uint8_t *_mem;
     size_t _memsize;
-    
+    uint32_t _sectorSize;
+    uint32_t _metadataSectorIdx;
+    uint8_t _ExtHDDKey[0x20];
     AES_KEY _diskKeys[kDiskKeyIDTotalNum];
     
     size_t aes_run_xts_block(const void *inbuf, void *outbuf, size_t bufSize, const AES_KEY *tweak, const AES_KEY *key, uint64_t index, bool doEncrypt);
@@ -42,7 +44,7 @@ public:
     
     void setMetaDataKey(const void *key, size_t keySize);
     void setMetaTweakKey(const void *key, size_t keySize);
-    void setDataKeygenKey(const void *key, size_t keySize); //must be set after meta key/tweak were set
+    void initCrypto(const void *dataKeygenKey, size_t dataKeygenKeySize); //must be set after meta key/tweak were set
     
     bool isWriteable();
     uint64_t getDataSize();
