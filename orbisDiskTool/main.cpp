@@ -20,7 +20,7 @@ using namespace orbisDiskTool;
 static struct option longopts[] = {
     { "help",               no_argument,        NULL, 'h' },
     { "decrypt",            required_argument,  NULL, 'd' },
-    { "exteranl",           no_argument,        NULL, 'h' },
+    { "external",           no_argument,        NULL, 'E' },
     { "input",              required_argument,  NULL, 'i' },
     { "threads",            required_argument,  NULL, 'j' },
     { "data-keygen-key",    required_argument,  NULL, 'k' },
